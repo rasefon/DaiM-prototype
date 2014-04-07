@@ -28,4 +28,4 @@ st.o: st.c st.h
 	$(CC) -c st.c
 
 clean:
-	rm -rf *.o *.exe lex.yy.c y.tab.*
+	rm -rf *.o lex.yy.c y.tab.*

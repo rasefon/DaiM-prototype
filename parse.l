@@ -1,3 +1,14 @@
+/************************************************
+
+  parse.l -
+
+  $Author: wzq $
+  $Date: 2014/04/06 $
+
+  Copyright (C) 2014 Zheqin Wang
+
+************************************************/
+
 %{
 #include <stdio.h>
 #include <string.h>
@@ -76,6 +87,6 @@ ID             [_a-zA-Z][_a-zA-Z0-9]*
 "*="                 { return MUL_ASSIGN; }
 "/="                 { return DIV_ASSIGN; } 
 {ID}                 { return ID; }
-([0-9][0-9]*)        { return INT_VALUE; }
-[0-9]+\.[0-9]+       { return DOUBLE_VALUE; }
+-?([0-9][0-9]*)        { return INT_VALUE; }
+-?[0-9]+\.[0-9]+       { return DOUBLE_VALUE; }
 %%
