@@ -11,23 +11,36 @@
 %{
 #include <stdio.h>
 #include <stdarg.h>
+#include "ast.h"
 #define YYDEBUG 1
 
 void yyerror(char *s, ...);
 %}
-%token STR_VALUE
-%token BOOL INT DOUBLE STR RECORD IF ELSE ELSIF TRUE FALSE LOOP NEXT BREAK FUNC RETURN NIL
-   AND_OP OR_OP EQ_OP NE_OP LE_OP GE_OP ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN INT_VALUE 
-   DOUBLE_VALUE END
-%token ID
 
-/*%type selection_stmt iteration_stmt jump_stmt stmt*/
-/*%type stmt_list*/
-/*%type param_list*/
-/*%type argument_list*/
-/*%type expr logical_or_expr logical_and_expr eq_expr relational_expr */
-      /*additive_expr multiplicative_expr unary_expr primary_expr*/
-/*%type elsif elsif_list*/
+%union {
+   Dm_node*          node;
+   DM_ULONG          sym_id; 
+   DM_INTER_VALUE    inter_value;
+}
+
+//---------------------current not used-----------------------
+%token BOOL INT DOUBLE STR  
+//------------------------------------------------------------
+//---------------------keywords-------------------------------
+%token RECORD IF ELSE ELSIF LOOP NEXT BREAK FUNC RETURN AND_OP OR_OP EQ_OP NE_OP LE_OP GE_OP 
+       ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN END
+//------------------------------------------------------------
+%token<node> STR_VALUE DOUBLE_VALUE
+%token<inter_value> INT_VALUE TRUE FALSE NIL
+%token<sym_id> ID 
+
+%type<node> selection_stmt iteration_stmt jump_stmt stmt
+%type<node> stmt_list
+%type<node> param_list
+%type<node> argument_list
+%type<node> expr logical_or_expr logical_and_expr eq_expr relational_expr
+            additive_expr multiplicative_expr unary_expr primary_expr
+%type<node> elsif elsif_list
 
 %start parse_unit
 

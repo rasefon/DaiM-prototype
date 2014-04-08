@@ -11,8 +11,8 @@
 #ifndef DAIM_H
 #define DAIM_H
 
-typedef unsigned long DM_VALUE;
 typedef unsigned long DM_ULONG;
+typedef unsigned long DM_INTER_VALUE;
 
 #include <limits.h>
 //Only use 30 bits, the leftmost 2 bits are unused.
@@ -37,5 +37,9 @@ typedef unsigned long DM_ULONG;
 #define IS_DMNIL(v) (((DM_ULONG)(v)&~DMnil)!=0)
 
 //Rightmost 8 bits is used to determine the type of...
+
+
+//--------------------
+
 
 #endif
