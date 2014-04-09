@@ -36,10 +36,13 @@ typedef unsigned long DM_INTER_VALUE;
 // In dm language, false and nil are considered as nil.
 #define IS_DMNIL(v) (((DM_ULONG)(v)&~DMnil)!=0)
 
-//Rightmost 8 bits is used to determine the type of...
+//=========0x------xx==============
+//Rightmost 8 bits is used to determine the Dm internal type, such as string, big number...
 
 
-//--------------------
-
+//=========0x----xx--==============
+//These 8 bits flag determin the dm_node_type
+#define DM_INT_TYPE_WIDTH 8
+#define DM_NODE_TYPE(flag)
 
 #endif

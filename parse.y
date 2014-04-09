@@ -39,7 +39,7 @@ void yyerror(char *s, ...);
 %type<node> param_list
 %type<node> argument_list
 %type<node> expr logical_or_expr logical_and_expr eq_expr relational_expr
-            additive_expr multiplicative_expr unary_expr primary_expr
+            add_sub_expr mul_div_expr unary_expr primary_expr
 %type<node> elsif elsif_list
 
 %start parse_unit
@@ -113,24 +113,24 @@ eq_expr
 ;
 
 relational_expr
-   : additive_expr
-   | relational_expr '<' additive_expr
-   | relational_expr '>' additive_expr
-   | relational_expr LE_OP additive_expr
-   | relational_expr GE_OP additive_expr 
+   : add_sub_expr
+   | relational_expr '<' add_sub_expr
+   | relational_expr '>' add_sub_expr
+   | relational_expr LE_OP add_sub_expr
+   | relational_expr GE_OP add_sub_expr 
 ;
 
-additive_expr
-   : multiplicative_expr
-   | additive_expr '+' multiplicative_expr
-   | additive_expr '-' multiplicative_expr
+add_sub_expr
+   : mul_div_expr
+   | add_sub_expr '+' mul_div_expr
+   | add_sub_expr '-' mul_div_expr
 ;
 
-multiplicative_expr
+mul_div_expr
    : unary_expr
-   | multiplicative_expr '*' unary_expr
-   | multiplicative_expr '/' unary_expr
-   | multiplicative_expr '%' unary_expr
+   | mul_div_expr '*' unary_expr
+   | mul_div_expr '/' unary_expr
+   | mul_div_expr '%' unary_expr
 ;
 
 unary_expr
