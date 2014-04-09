@@ -18,9 +18,7 @@ void yyerror(char *s, ...);
 %}
 
 %union {
-   Dm_node*          node;
-   DM_ULONG          sym_id; 
-   DM_INTER_VALUE    inter_value;
+   DmNode*     node;
 }
 
 //---------------------current not used-----------------------
@@ -31,8 +29,8 @@ void yyerror(char *s, ...);
        ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN END
 //------------------------------------------------------------
 %token<node> STR_VALUE DOUBLE_VALUE
-%token<inter_value> INT_VALUE TRUE FALSE NIL
-%token<sym_id> ID 
+%token<node> INT_VALUE TRUE FALSE NIL
+%token<node> ID 
 
 %type<node> selection_stmt iteration_stmt jump_stmt stmt
 %type<node> stmt_list

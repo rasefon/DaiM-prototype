@@ -13,13 +13,8 @@
 #include "daim.h"
 
 typedef struct {
-   DM_ULONG flags;
-   union {
-      struct Dm_node*   node;
-      DM_INTER_VALUE    inter_value;  
-      DM_ULONG          sym_id;
-   } m1;
-} Dm_node;
+   DM_ULONG flag; 
+} DmNode;
 
 enum dm_node_type {
    nd_kFunc = 1,
@@ -69,5 +64,10 @@ enum dm_node_type {
    nd_iter_stmt,
    nd_jump_stmt,
 };
+//=========0x----xx--==============
+//These 8 bits flag determin the dm_node_type
+#define DM_INT_TYPE_WIDTH  8
+#define DM_NODE_TYPE_MASK  0xff  
+#define DM_NODE_TYPE(nd) ((((DmNode*)(nd))->flag>>DM_INT_TYPE_WIDTH) & DM_NODE_TYPE_MASK)
 
 #endif
