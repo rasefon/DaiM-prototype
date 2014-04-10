@@ -61,23 +61,25 @@ enum dm_node_type {
    nd_jump_stmt,
 };
 
-typedef struct DmNode {
+struct DmNode{
    DM_ULONG flag; 
    DM_USHORT lineno;
 
    union {
-      DmNode* node;
+      struct DmNode* node;
       DM_ULONG op;
    } n1;
 
    union {
-      DmNode* node;
+      struct DmNode* node;
    } n2;
 
    union {
-      DmNode* node;
+      struct DmNode* node;
    } n3;
-} DmNode;
+};
+
+typedef struct DmNode DmNode;
 
 //=========0x----xx--==============
 //These 8 bits flag determin the dm_node_type
@@ -87,7 +89,7 @@ typedef struct DmNode {
 
 inline void set_node_type(DmNode*, enum dm_node_type);
 inline void set_node_lineno(DmNode*, DM_USHORT);
-DmNode* make_dm_node(enum dm_node_type, DM_USHORT lineno, DmNode* n1, DmNode* n2, DmNode n3);
+DmNode* make_dm_node(enum dm_node_type, DM_USHORT lineno, DmNode* n1, DmNode* n2, DmNode* n3);
 DmNode* make_func_def_node();
 
 #endif

@@ -27,3 +27,6 @@ tags
 
 # lalr debug
 *.output
+
+# others
+*.gch
