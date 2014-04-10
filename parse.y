@@ -55,7 +55,9 @@ defs_or_stmt
 ;
 
 func_def
-   : FUNC ID '(' param_list ')' stmt_list END
+   : FUNC ID '(' param_list ')' stmt_list END {
+
+   }
    | FUNC ID '(' ')' stmt_list END
 ;
 

@@ -12,10 +12,6 @@
 #define AST_H
 #include "daim.h"
 
-typedef struct {
-   DM_ULONG flag; 
-} DmNode;
-
 enum dm_node_type {
    nd_kFunc = 1,
    nd_kAssign,
@@ -64,10 +60,34 @@ enum dm_node_type {
    nd_iter_stmt,
    nd_jump_stmt,
 };
+
+typedef struct DmNode {
+   DM_ULONG flag; 
+   DM_USHORT lineno;
+
+   union {
+      DmNode* node;
+      DM_ULONG op;
+   } n1;
+
+   union {
+      DmNode* node;
+   } n2;
+
+   union {
+      DmNode* node;
+   } n3;
+} DmNode;
+
 //=========0x----xx--==============
 //These 8 bits flag determin the dm_node_type
-#define DM_INT_TYPE_WIDTH  8
-#define DM_NODE_TYPE_MASK  0xff  
-#define DM_NODE_TYPE(nd) ((((DmNode*)(nd))->flag>>DM_INT_TYPE_WIDTH) & DM_NODE_TYPE_MASK)
+#define DM_TYPE_WIDTH  8
+#define DM_NODE_TYPE_MASK  0xffff00ff  
+#define DM_NODE_TYPE(nd) ((((DmNode*)(nd))->flag>>DM_INT_TYPE_WIDTH) & 0xff)
+
+inline void set_node_type(DmNode*, enum dm_node_type);
+inline void set_node_lineno(DmNode*, DM_USHORT);
+DmNode* make_dm_node(enum dm_node_type, DM_USHORT lineno, DmNode* n1, DmNode* n2, DmNode n3);
+DmNode* make_func_def_node();
 
 #endif

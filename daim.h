@@ -13,6 +13,7 @@
 
 typedef unsigned long DM_ULONG;
 typedef unsigned long DM_INTER_VALUE;
+typedef unsigned short DM_USHORT;
 
 #include <limits.h>
 //Only use 30 bits, the leftmost 2 bits are unused.
