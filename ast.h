@@ -37,6 +37,7 @@ enum dm_node_type {
    nd_func_def,
    nd_param_list,
    nd_sym_id,
+   nd_id_name,
    nd_stmt_list,
    nd_stmt,
    nd_expr_list,
@@ -64,19 +65,17 @@ enum dm_node_type {
 struct DmNode{
    DM_ULONG flag; 
    DM_USHORT lineno;
+   DM_USHORT bin_num;
 
    union {
-      struct DmNode* node;
       DM_ULONG op;
-   } n1;
+      DM_ULONG id;
+      char*    id_name;
+   } m1;
 
    union {
-      struct DmNode* node;
-   } n2;
-
-   union {
-      struct DmNode* node;
-   } n3;
+      struct DmNode** node_bin;
+   } m2;
 };
 
 typedef struct DmNode DmNode;
@@ -89,7 +88,9 @@ typedef struct DmNode DmNode;
 
 inline void set_node_type(DmNode*, enum dm_node_type);
 inline void set_node_lineno(DmNode*, DM_USHORT);
-DmNode* make_dm_node(enum dm_node_type, DM_USHORT lineno, DmNode* n1, DmNode* n2, DmNode* n3);
-DmNode* make_func_def_node();
+inline void set_node_bin_num(DmNode*, DM_USHORT);
+DmNode* dm_create_node(enum dm_node_type, DM_USHORT lineno, DM_USHORT bin_num, DM_ULONG m1, DmNode*** m2);
+DmNode* dm_create_param_node(char* id_name, DM_USHORT lineno);
+DmNode* dm_create_func_def_node();
 
 #endif

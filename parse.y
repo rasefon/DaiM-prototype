@@ -12,13 +12,20 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include "ast.h"
+#include "st.h"
+#include "dm_memory.h"
 #define YYDEBUG 1
 
 void yyerror(char *s, ...);
+
+extern st_table* g_sym_tbl;
+extern int yylineno;
 %}
 
 %union {
    DmNode*     node;
+   DM_ULONG    value;
+   char*       id_name;
 }
 
 //---------------------current not used-----------------------
@@ -29,8 +36,8 @@ void yyerror(char *s, ...);
        ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN END
 //------------------------------------------------------------
 %token<node> STR_VALUE DOUBLE_VALUE
-%token<node> INT_VALUE TRUE FALSE NIL
-%token<node> ID 
+%token<value> INT_VALUE TRUE FALSE NIL
+%token<id_name> ID 
 
 %type<node> selection_stmt iteration_stmt jump_stmt stmt
 %type<node> stmt_list
@@ -62,7 +69,9 @@ func_def
 ;
 
 param_list
-   : ID
+   : ID {
+      dm_create_param_node($1, yylineno);
+   }
    | param_list ',' ID
 ;
 
@@ -185,8 +194,6 @@ jump_stmt
 
 void yyerror(char *s, ...)
 {
-  extern yylineno;
-
   va_list ap;
   va_start(ap, s);
 

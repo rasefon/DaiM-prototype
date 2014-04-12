@@ -6,7 +6,7 @@ INCLUDES = \
 $(TARGET): $(objects)
 	$(CC) -o $(TARGET) $(objects)
 
-main.o: main.c st.h 
+main.o: st.h 
 	$(CC) -c main.c
 
 y.tab.h: parse.y
@@ -24,10 +24,10 @@ y.tab.o: y.tab.c
 lex.y.o: lex.yy.c 
 	$(CC) -c -g $*.c $(INCLUDES)
 
-st.o: st.c st.h
+st.o: st.h
 	$(CC) -c st.c
 
-ast.o: ast.c ast.h daim.h
+ast.o: ast.h daim.h
 	$(CC) -c ast.c
 
 clean:

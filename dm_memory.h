@@ -13,5 +13,10 @@
 #include <stdlib.h>
 
 #define DM_MALLOC(n) malloc(n)
+#define DM_STRDUP(n) strdup(n)
+
+#ifndef NULL
+#define NULL 0
+#endif
 
 #endif

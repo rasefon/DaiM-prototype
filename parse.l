@@ -14,6 +14,7 @@
 #include <string.h>
 #include "ast.h"
 #include "y.tab.h"
+#include "dm_memory.h"
 %}
 
 %option noyywrap yylineno
@@ -87,7 +88,10 @@ ID             [_a-zA-Z][_a-zA-Z0-9]*
 "-="                 { return SUB_ASSIGN; }
 "*="                 { return MUL_ASSIGN; }
 "/="                 { return DIV_ASSIGN; } 
-{ID}                 { return ID; }
+{ID}                 { 
+   yylval.id_name = DM_STRDUP(yytext);
+   return ID; 
+                     }
 -?([0-9][0-9]*)        { return INT_VALUE; }
 -?[0-9]+\.[0-9]+       { return DOUBLE_VALUE; }
 %%
