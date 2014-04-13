@@ -89,9 +89,17 @@ ID             [_a-zA-Z][_a-zA-Z0-9]*
 "*="                 { return MUL_ASSIGN; }
 "/="                 { return DIV_ASSIGN; } 
 {ID}                 { 
-   yylval.id_name = DM_STRDUP(yytext);
+   yylval.str_val = DM_STRDUP(yytext);
    return ID; 
-                     }
--?([0-9][0-9]*)        { return INT_VALUE; }
--?[0-9]+\.[0-9]+       { return DOUBLE_VALUE; }
+}
+
+-?([0-9][0-9]*)      { 
+   yylval.int_val = atoi(yytext);
+   return INT_VALUE; 
+}
+
+-?[0-9]+\.[0-9]+     { 
+   yylval.str_val = DM_STRDUP(yytext);
+   return DOUBLE_VALUE; 
+}
 %%

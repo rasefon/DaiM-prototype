@@ -33,11 +33,13 @@ enum dm_node_type {
    nd_kNext,
    nd_kBreak,
    nd_kReturn,
+   nd_kTrue,
+   nd_kFalse,
+   nd_kNil,
    nd_func_def,
    nd_func_call,
    nd_param_list,
    nd_sym_id,
-   nd_id_name,
    nd_stmt_list,
    nd_stmt,
    nd_expr_list,
@@ -51,6 +53,7 @@ enum dm_node_type {
    nd_unary_expr,
    nd_primary_expr,
    nd_str_val,
+   nd_int_val,
    nd_double_val,
    nd_arg_list,
    nd_assign_op_expr,
@@ -67,12 +70,14 @@ struct DmNode {
    DM_USHORT lineno;
 
    union {
-      DM_ULONG op;
-      char*    id_name;
+      DM_ULONG ul_val;
+      int      int_val;
+      char*    str_val;
+      struct DmNode*  node;
    } m1;
 
    union {
-      struct DmNode* next;
+      struct DmNode* node;
       struct DmNodeList* list;
    } m2;
 };
@@ -90,13 +95,28 @@ typedef struct DmNodeList DmNodeList;
 #define DM_NODE_TYPE_MASK  0xffff00ff  
 #define DM_NODE_TYPE(nd) ((((DmNode*)(nd))->flag>>DM_INT_TYPE_WIDTH) & 0xff)
 
+#define m_nd_param_name          m1.str_val
+#define m_nd_param_next          m2.node
+#define m_nd_func_name           m1.str_val
+#define m_nd_func_body           m2.list
+#define m_nd_param_list          node_bin[0]
+#define m_nd_func_stmt_list      node_bin[1]
+#define m_nd_id_name             m1.str_val
+#define m_nd_int_val             m1.int_val
+#define m_nd_double_val          m1.str_val
+#define m_nd_const_val           m1.ul_val
+
+
 inline void set_node_type(DmNode*, enum dm_node_type);
 inline void set_node_lineno(DmNode*, DM_USHORT);
-DmNode* dm_create_node(enum dm_node_type, DM_ULONG m1, DmNode* m2, DM_USHORT );
-DmNode* dm_create_param_node(char* id_name, DM_USHORT);
-DmNode* dm_link_param_node(DmNode* node_hd, char* id_name, DM_USHORT);
+inline DmNode* dm_create_node(enum dm_node_type, DM_USHORT );
+DmNode* dm_create_param_node(char* str_val, DM_USHORT);
+DmNode* dm_link_param_node(DmNode* node_hd, char* str_val, DM_USHORT);
 DmNode* dm_create_func_def_node(char* func_name, DmNode* parm_list, DmNode* stmt_list, DM_USHORT);
-DmNode* dm_create_or_find_id_node(char* id_name, DM_USHORT);
-DmNode* dm_find_id_node(char* id_name);
+DmNode* dm_create_or_find_id_node(char* str_val, DM_USHORT);
+DmNode* dm_find_id_node(char* str_val);
+DmNode* dm_create_int_node(int val, DM_USHORT);
+DmNode* dm_create_double_node(char* double_val, DM_USHORT);
+DmNode* dm_const_node(enum dm_node_type, DM_USHORT);
 
 #endif

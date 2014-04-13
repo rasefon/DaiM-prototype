@@ -12,8 +12,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include "ast.h"
-#include "st.h"
 #include "dm_memory.h"
+#include "st.h"
 #define YYDEBUG 1
 
 void yyerror(char *s, ...);
@@ -24,8 +24,9 @@ extern int yylineno;
 
 %union {
    DmNode*     node;
-   DM_ULONG    value;
-   char*       id_name;
+   DM_ULONG    ul_val;
+   int         int_val;
+   char*       str_val;
 }
 
 //---------------------current not used-----------------------
@@ -35,9 +36,10 @@ extern int yylineno;
 %token RECORD IF ELSE ELSIF LOOP NEXT BREAK FUNC RETURN AND_OP OR_OP EQ_OP NE_OP LE_OP GE_OP 
        ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN END
 //------------------------------------------------------------
-%token <node> STR_VALUE DOUBLE_VALUE
-%token <value> INT_VALUE TRUE FALSE NIL
-%token <id_name> ID 
+%token <str_val>  STR_VALUE DOUBLE_VALUE
+%token <ul_val>   TRUE FALSE NIL
+%token <int_val>  INT_VALUE
+%token <str_val>  ID 
 
 %type <node> selection_stmt iteration_stmt jump_stmt stmt
 %type <node> func_def stmt_list param_list argument_list
@@ -153,12 +155,22 @@ primary_expr
    : ID {
       $$ = dm_find_id_node($1);
    }
-   | STR_VALUE
-   | INT_VALUE
-   | DOUBLE_VALUE 
-   | NIL
-   | TRUE
-   | FALSE
+   /*| STR_VALUE*/
+   | INT_VALUE {
+      $$ = dm_create_int_node($1, yylineno);      
+   }
+   | DOUBLE_VALUE {
+      $$ = dm_create_double_node($1, yylineno);
+   }
+   | NIL {
+      $$ = dm_const_node(nd_kNil, yylineno);
+   }
+   | TRUE {
+      $$ = dm_const_node(nd_kTrue, yylineno);
+   }
+   | FALSE {
+      $$ = dm_const_node(nd_kFalse, yylineno);
+   }
    | '(' expr ')'
    | ID '(' argument_list ')'
    | ID '(' ')'
