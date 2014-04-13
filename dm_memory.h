@@ -12,8 +12,9 @@
 #define DM_MALLOC_H
 #include <stdlib.h>
 
-#define DM_MALLOC(n) malloc(n)
-#define DM_STRDUP(n) strdup(n)
+#define DM_MALLOC malloc
+#define DM_CALLOC calloc
+#define DM_STRDUP strdup
 
 #ifndef NULL
 #define NULL 0

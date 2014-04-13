@@ -13,8 +13,7 @@
 #include "daim.h"
 
 enum dm_node_type {
-   nd_kFunc = 1,
-   nd_kAssign,
+   nd_kAssign = 1,
    nd_KAddAssign,
    nd_kSubAssign,
    nd_kMulAssign,
@@ -35,6 +34,7 @@ enum dm_node_type {
    nd_kBreak,
    nd_kReturn,
    nd_func_def,
+   nd_func_call,
    nd_param_list,
    nd_sym_id,
    nd_id_name,
@@ -62,23 +62,27 @@ enum dm_node_type {
    nd_jump_stmt,
 };
 
-struct DmNode{
+struct DmNode {
    DM_ULONG flag; 
    DM_USHORT lineno;
-   DM_USHORT bin_num;
 
    union {
       DM_ULONG op;
-      DM_ULONG id;
       char*    id_name;
    } m1;
 
    union {
-      struct DmNode** node_bin;
+      struct DmNode* next;
+      struct DmNodeList* list;
    } m2;
 };
-
 typedef struct DmNode DmNode;
+
+struct DmNodeList {
+   DM_USHORT bin_num;
+   DmNode** node_bin;
+};
+typedef struct DmNodeList DmNodeList;
 
 //=========0x----xx--==============
 //These 8 bits flag determin the dm_node_type
@@ -88,9 +92,11 @@ typedef struct DmNode DmNode;
 
 inline void set_node_type(DmNode*, enum dm_node_type);
 inline void set_node_lineno(DmNode*, DM_USHORT);
-inline void set_node_bin_num(DmNode*, DM_USHORT);
-DmNode* dm_create_node(enum dm_node_type, DM_USHORT lineno, DM_USHORT bin_num, DM_ULONG m1, DmNode*** m2);
-DmNode* dm_create_param_node(char* id_name, DM_USHORT lineno);
-DmNode* dm_create_func_def_node();
+DmNode* dm_create_node(enum dm_node_type, DM_ULONG m1, DmNode* m2, DM_USHORT );
+DmNode* dm_create_param_node(char* id_name, DM_USHORT);
+DmNode* dm_link_param_node(DmNode* node_hd, char* id_name, DM_USHORT);
+DmNode* dm_create_func_def_node(char* func_name, DmNode* parm_list, DmNode* stmt_list, DM_USHORT);
+DmNode* dm_create_or_find_id_node(char* id_name, DM_USHORT);
+DmNode* dm_find_id_node(char* id_name);
 
 #endif

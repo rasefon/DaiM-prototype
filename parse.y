@@ -35,17 +35,15 @@ extern int yylineno;
 %token RECORD IF ELSE ELSIF LOOP NEXT BREAK FUNC RETURN AND_OP OR_OP EQ_OP NE_OP LE_OP GE_OP 
        ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN END
 //------------------------------------------------------------
-%token<node> STR_VALUE DOUBLE_VALUE
-%token<value> INT_VALUE TRUE FALSE NIL
-%token<id_name> ID 
+%token <node> STR_VALUE DOUBLE_VALUE
+%token <value> INT_VALUE TRUE FALSE NIL
+%token <id_name> ID 
 
-%type<node> selection_stmt iteration_stmt jump_stmt stmt
-%type<node> stmt_list
-%type<node> param_list
-%type<node> argument_list
-%type<node> expr logical_or_expr logical_and_expr eq_expr relational_expr
+%type <node> selection_stmt iteration_stmt jump_stmt stmt
+%type <node> func_def stmt_list param_list argument_list
+%type <node> expr logical_or_expr logical_and_expr eq_expr relational_expr
             add_sub_expr mul_div_expr unary_expr primary_expr
-%type<node> elsif elsif_list
+%type <node> elsif elsif_list
 
 %start parse_unit
 
@@ -63,16 +61,20 @@ defs_or_stmt
 
 func_def
    : FUNC ID '(' param_list ')' stmt_list END {
-
+      /*$$ = dm_create_func_def_node($2, $4, $6, yylineno);      */
    }
-   | FUNC ID '(' ')' stmt_list END
+   | FUNC ID '(' ')' stmt_list END {
+      /*$$ = dm_create_func_def_node($2, NULL, $6, yylineno);*/
+   }
 ;
 
 param_list
    : ID {
-      dm_create_param_node($1, yylineno);
+      $$ = dm_create_param_node($1, yylineno);
    }
-   | param_list ',' ID
+   | param_list ',' ID {
+      $$ = dm_link_param_node($1, $3, yylineno);
+   }
 ;
 
 stmt_list
@@ -148,7 +150,9 @@ unary_expr
 ;
 
 primary_expr
-   : ID
+   : ID {
+      $$ = dm_find_id_node($1);
+   }
    | STR_VALUE
    | INT_VALUE
    | DOUBLE_VALUE 
