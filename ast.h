@@ -99,13 +99,15 @@ typedef struct DmNodeList DmNodeList;
 #define m_nd_param_next          m2.node
 #define m_nd_func_name           m1.str_val
 #define m_nd_func_body           m2.list
-#define m_nd_param_list          node_bin[0]
+#define m_nd_func_param_list     node_bin[0]
 #define m_nd_func_stmt_list      node_bin[1]
 #define m_nd_id_name             m1.str_val
 #define m_nd_int_val             m1.int_val
 #define m_nd_double_val          m1.str_val
 #define m_nd_const_val           m1.ul_val
-
+#define m_nd_arg_node            m1.node
+#define m_nd_arg_next            m2.node
+#define m_nd_func_arg_list       m1.node
 
 inline void set_node_type(DmNode*, enum dm_node_type);
 inline void set_node_lineno(DmNode*, DM_USHORT);
@@ -118,5 +120,8 @@ DmNode* dm_find_id_node(char* str_val);
 DmNode* dm_create_int_node(int val, DM_USHORT);
 DmNode* dm_create_double_node(char* double_val, DM_USHORT);
 DmNode* dm_const_node(enum dm_node_type, DM_USHORT);
+DmNode* dm_create_arg_list(DmNode* expr, DM_USHORT);
+DmNode* dm_link_arg_list(DmNode* arg_list, DmNode* expr, DM_USHORT);
+DmNode* dm_create_func_call_node(char* func_name, DmNode* arg_list, DM_USHORT);
 
 #endif

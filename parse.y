@@ -63,10 +63,10 @@ defs_or_stmt
 
 func_def
    : FUNC ID '(' param_list ')' stmt_list END {
-      /*$$ = dm_create_func_def_node($2, $4, $6, yylineno);      */
+      $$ = dm_create_func_def_node($2, $4, $6, yylineno);     
    }
    | FUNC ID '(' ')' stmt_list END {
-      /*$$ = dm_create_func_def_node($2, NULL, $6, yylineno);*/
+      $$ = dm_create_func_def_node($2, NULL, $5, yylineno);
    }
 ;
 
@@ -155,7 +155,9 @@ primary_expr
    : ID {
       $$ = dm_find_id_node($1);
    }
-   /*| STR_VALUE*/
+   | STR_VALUE {
+      //TODO
+   }
    | INT_VALUE {
       $$ = dm_create_int_node($1, yylineno);      
    }
@@ -171,14 +173,24 @@ primary_expr
    | FALSE {
       $$ = dm_const_node(nd_kFalse, yylineno);
    }
-   | '(' expr ')'
-   | ID '(' argument_list ')'
-   | ID '(' ')'
+   | '(' expr ')' {
+      $$ = $2;
+   }
+   | ID '(' argument_list ')' {
+      $$ = dm_create_func_call_node($1, $3, yylineno);
+   }
+   | ID '(' ')' {
+      $$ = dm_create_func_call_node($1, NULL, yylineno);
+   }
 ;
 
 argument_list
-   : expr
-   | argument_list ',' expr
+   : expr {
+      $$ = dm_create_arg_list($1, yylineno);
+   }
+   | argument_list ',' expr {
+      $$ = dm_link_arg_list($1, $3, yylineno);
+   }
 ;
 
 selection_stmt
