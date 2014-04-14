@@ -111,44 +111,72 @@ assignment_op
 
 logical_or_expr
    : logical_and_expr
-   | logical_or_expr OR_OP logical_and_expr
+   | logical_or_expr OR_OP logical_and_expr {
+      $$ = dm_create_binary_node(nd_kOr, $1, $3, yylineno);
+   }
 ;
 
 logical_and_expr
    : eq_expr
-   | logical_and_expr AND_OP eq_expr
+   | logical_and_expr AND_OP eq_expr {
+      $$ = dm_create_binary_node(nd_kAnd, $1, $3, yylineno);
+   }
 ;
 
 eq_expr
    : relational_expr
-   | eq_expr EQ_OP relational_expr
-   | eq_expr NE_OP relational_expr
+   | eq_expr EQ_OP relational_expr {
+      $$ = dm_create_binary_node(nd_kEq, $1, $3, yylineno);
+   }
+   | eq_expr NE_OP relational_expr {
+      $$ = dm_create_binary_node(nd_kNe, $1, $3, yylineno);
+   }
 ;
 
 relational_expr
    : add_sub_expr
-   | relational_expr '<' add_sub_expr
-   | relational_expr '>' add_sub_expr
-   | relational_expr LE_OP add_sub_expr
-   | relational_expr GE_OP add_sub_expr 
+   | relational_expr '<' add_sub_expr {
+      $$ = dm_create_binary_node(nd_kLt, $1, $3, yylineno);
+   }
+   | relational_expr '>' add_sub_expr {
+      $$ = dm_create_binary_node(nd_kGt, $1, $3, yylineno);
+   }
+   | relational_expr LE_OP add_sub_expr {
+      $$ = dm_create_binary_node(nd_kLE, $1, $3, yylineno);
+   }
+   | relational_expr GE_OP add_sub_expr {
+      $$ = dm_create_binary_node(nd_kGE, $1, $3, yylineno);
+   }
 ;
 
 add_sub_expr
    : mul_div_expr
-   | add_sub_expr '+' mul_div_expr
-   | add_sub_expr '-' mul_div_expr
+   | add_sub_expr '+' mul_div_expr {
+      $$ = dm_create_binary_node(nd_kPlus, $1, $3, yylineno);
+   }
+   | add_sub_expr '-' mul_div_expr {
+      $$ = dm_create_binary_node(nd_kPlus, $1, $3, yylineno);
+   }
 ;
 
 mul_div_expr
    : unary_expr
-   | mul_div_expr '*' unary_expr
-   | mul_div_expr '/' unary_expr
-   | mul_div_expr '%' unary_expr
+   | mul_div_expr '*' unary_expr {
+      $$ = dm_create_binary_node(nd_kMul, $1, $3, yylineno);
+   }
+   | mul_div_expr '/' unary_expr {
+      $$ = dm_create_binary_node(nd_kDiv, $1, $3, yylineno);
+   }
+   | mul_div_expr '%' unary_expr {
+      $$ = dm_create_binary_node(nd_kMod, $1, $3, yylineno);
+   }
 ;
 
 unary_expr
-   : primary_expr
-   | '!' unary_expr
+   : primary_expr    
+   | '!' unary_expr {
+      $$ = dm_create_unary_node(nd_kNot, $2, yylineno);
+   }
 ;
 
 primary_expr
@@ -194,19 +222,31 @@ argument_list
 ;
 
 selection_stmt
-   : IF '(' logical_or_expr ')' stmt_list END
-   | IF '(' logical_or_expr ')' ELSE stmt_list END
-   | IF '(' logical_or_expr ')' elsif_list END
-   | IF '(' logical_or_expr ')' elsif_list ELSE stmt_list END
+   : IF '(' logical_or_expr ')' stmt_list END {
+      $$ = dm_create_selection_node($3, $5, NULL, NULL, NULL, yylineno);
+   }
+   | IF '(' logical_or_expr ')' stmt_list ELSE stmt_list END {
+      $$ = dm_create_selection_node($3, $5, $7, NULL, NULL, yylineno);
+   }
+   | IF '(' logical_or_expr ')' stmt_list elsif_list END {
+      $$ = dm_create_selection_node($3, $5, NULL, $6, NULL, yylineno);
+   }
+   | IF '(' logical_or_expr ')' stmt_list elsif_list ELSE stmt_list END {
+      $$ = dm_create_selection_node($3, $5, NULL, $6, $8, yylineno);
+   }
 ;
 
 elsif_list
    : elsif
-   | elsif_list elsif
+   | elsif_list elsif {
+      $$ = dm_link_elsif_node($1, $2);
+   }
 ;
 
 elsif
-   : ELSIF '(' logical_or_expr ')' stmt_list
+   : ELSIF '(' logical_or_expr ')' stmt_list {
+      $$ = dm_create_elsif_node($3, $5, yylineno);
+   }
 ;
 
 iteration_stmt
