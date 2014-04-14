@@ -93,7 +93,7 @@ DmNode* dm_create_or_find_id_node(char* str_val, DM_USHORT lineno)
    if (!st_lookup(g_name_id_tbl, str_val, (char**)&id_node)) {
       id_node = dm_create_node(nd_str_val, lineno);
       id_node->m_nd_id_name = str_val;
-      st_insert(g_name_id_tbl, str_val, (char*)str_val);
+      st_insert(g_name_id_tbl, str_val, (char*)id_node);
    }
    return id_node;
 }
@@ -147,14 +147,14 @@ DmNode* dm_create_arg_list(DmNode* expr, DM_USHORT lineno)
    return node;
 }
 
-DmNode* dm_link_arg_list(DmNode* arg_list, DmNode* node, DM_USHORT lineno)
+DmNode* dm_link_node_list(DmNode* link_list, DmNode* node)
 {
-   DmNode* arg_tail = arg_list->m_nd_arg_node;
-   while(arg_tail->m_nd_arg_next) {
-      arg_tail = arg_tail->m_nd_arg_next;
+   DmNode* list_tail = link_list->m_nd_link_list;
+   while(list_tail->m_nd_link_next) {
+      list_tail = list_tail->m_nd_link_next;
    }
-   arg_tail->m_nd_arg_next = node;
-   return arg_list;
+   list_tail->m_nd_link_next = node;
+   return link_list;
 }
 
 DmNode* dm_create_func_call_node(char* func_name, DmNode* arg_list, DM_USHORT lineno)
@@ -213,12 +213,20 @@ DmNode* dm_create_elsif_node(DmNode* condition, DmNode* stmt, DM_USHORT lineno)
    return elsif_node;
 }
 
-DmNode* dm_link_elsif_node(DmNode* elsif_list, DmNode* elsif)
+DmNode* dm_create_iter_node(DmNode* condition, DmNode* stmt_list, DM_USHORT lineno)
 {
-   DmNode* list_tail = elsif_list;
-   while(list_tail->m_nd_elsif_next) {
-      list_tail = list_tail->m_nd_elsif_next;
-   }
-   list_tail->m_nd_elsif_next = elsif;
-   return elsif_list;
+   DmNode* iter_node = dm_create_node(nd_kLoop, lineno);
+   iter_node->m_nd_iter_cond = condition;
+   iter_node->m_nd_iter_stmt = stmt_list;
+   return iter_node;
 }
+
+DmNode* dm_create_assign_node(char* id_name, DM_ULONG assign_op, DmNode* expr_node, DM_USHORT lineno)
+{
+   DmNode* assign_node = dm_create_node(assign_op, lineno);
+   DmNode* id_node = dm_create_or_find_id_node(id_name, lineno);
+   assign_node->m_nd_assign_id = id_node;
+   assign_node->m_nd_assign_expr = expr_node;
+   return assign_node;
+}
+

@@ -40,6 +40,7 @@ enum dm_node_type {
    nd_kNil,
    nd_kIf,
    nd_kElsif,
+   nd_kLoop,
    nd_func_def,
    nd_func_call,
    nd_param_list,
@@ -51,12 +52,7 @@ enum dm_node_type {
    nd_str_val,
    nd_int_val,
    nd_double_val,
-   nd_arg_list,
-   nd_assign_op_expr,
-   nd_assign_op,
-   nd_selection_stmt,
-   nd_iter_stmt,
-   nd_jump_stmt,
+   nd_arg_list
 };
 
 struct DmNode {
@@ -100,7 +96,6 @@ typedef struct DmNodeList DmNodeList;
 #define m_nd_double_val          m1.str_val
 #define m_nd_const_val           m1.ul_val
 #define m_nd_arg_node            m1.node
-#define m_nd_arg_next            m2.node
 #define m_nd_func_arg_list       m1.node
 #define m_nd_unary_node          m1.node
 #define m_nd_left_node           m1.node
@@ -113,7 +108,13 @@ typedef struct DmNodeList DmNodeList;
 #define m_nd_last_else_node      node_bin[3]
 #define m_nd_elsif_cond          m1.node
 #define m_nd_elsif_stmt          m2.node
-#define m_nd_elsif_next          m2.node
+#define m_nd_iter_cond           m1.node
+#define m_nd_iter_stmt           m2.node
+#define m_nd_assign_id           m1.node
+#define m_nd_assign_expr         m2.node
+#define m_nd_expr_node           m1.node
+#define m_nd_link_list           m1.node
+#define m_nd_link_next           m2.node
 
 inline void set_node_type(DmNode*, enum dm_node_type);
 inline void set_node_lineno(DmNode*, DM_USHORT);
@@ -127,13 +128,14 @@ DmNode* dm_create_int_node(int val, DM_USHORT);
 DmNode* dm_create_double_node(char* double_val, DM_USHORT);
 DmNode* dm_const_node(enum dm_node_type, DM_USHORT);
 DmNode* dm_create_arg_list(DmNode* expr, DM_USHORT);
-DmNode* dm_link_arg_list(DmNode* arg_list, DmNode* expr, DM_USHORT);
+DmNode* dm_link_node_list(DmNode* arg_list, DmNode* expr);
 DmNode* dm_create_func_call_node(char* func_name, DmNode* arg_list, DM_USHORT);
 DmNode* dm_create_unary_node(enum dm_node_type type, DmNode* unary_expr, DM_USHORT);
 DmNode* dm_create_binary_node(enum dm_node_type type, DmNode* left, DmNode* right, DM_USHORT);
 DmNode* dm_create_selection_node(DmNode* condition, DmNode* if_stmt, DmNode* else_stmt,
      DmNode* elsif_stmt, DmNode* last_else_stmt, DM_USHORT);
 DmNode* dm_create_elsif_node(DmNode* condition, DmNode* stmt, DM_USHORT);
-DmNode* dm_link_elsif_node(DmNode* elsif_list, DmNode* elsif);
+DmNode* dm_create_iter_node(DmNode* condition, DmNode* stmt_list, DM_USHORT);
+DmNode* dm_create_assign_node(char* id_name, DM_ULONG assign_op, DmNode* expr_node, DM_USHORT);
 
 #endif

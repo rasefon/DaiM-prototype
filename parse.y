@@ -41,11 +41,12 @@ extern int yylineno;
 %token <int_val>  INT_VALUE
 %token <str_val>  ID 
 
-%type <node> selection_stmt iteration_stmt jump_stmt stmt
-%type <node> func_def stmt_list param_list argument_list
-%type <node> expr logical_or_expr logical_and_expr eq_expr relational_expr
-            add_sub_expr mul_div_expr unary_expr primary_expr
-%type <node> elsif elsif_list
+%type <node>      selection_stmt iteration_stmt jump_stmt stmt
+%type <node>      func_def stmt_list param_list argument_list
+%type <node>      expr logical_or_expr logical_and_expr eq_expr relational_expr
+                  add_sub_expr mul_div_expr unary_expr primary_expr
+%type <node>      expr_list elsif elsif_list
+%type <ul_val>    assignment_op
 
 %start parse_unit
 
@@ -81,11 +82,15 @@ param_list
 
 stmt_list
    : stmt
-   | stmt_list stmt
+   | stmt_list stmt {
+      $$ = dm_link_node_list($1, $2);
+   }
 ;
 
 stmt
-   : expr_list ';'
+   : expr_list ';' {
+      $$ = $1;
+   }
    | selection_stmt 
    | iteration_stmt
    | jump_stmt 
@@ -93,20 +98,34 @@ stmt
 
 expr_list
    : expr
-   | expr_list ',' expr
+   | expr_list ',' expr {
+      $$ = dm_link_node_list($1, $3);
+   }
    ;
 
 expr
    : logical_or_expr
-   | ID assignment_op expr
+   | ID assignment_op expr {
+      $$ = dm_create_assign_node($1, $2, $3, yylineno);
+   }
 ;
 
 assignment_op
-   : '='
-   | ADD_ASSIGN
-   | SUB_ASSIGN
-   | MUL_ASSIGN
-   | DIV_ASSIGN
+   : '=' {
+      $$ = (DM_ULONG)nd_kAssign;
+   }
+   | ADD_ASSIGN {
+      $$ = (DM_ULONG)nd_KAddAssign;
+   }
+   | SUB_ASSIGN {
+      $$ = (DM_ULONG)nd_kSubAssign;
+   }
+   | MUL_ASSIGN {
+      $$ = (DM_ULONG)nd_kMulAssign;
+   }
+   | DIV_ASSIGN {
+      $$ = (DM_ULONG)nd_kDivAssign;
+   }
 ; 
 
 logical_or_expr
@@ -217,7 +236,7 @@ argument_list
       $$ = dm_create_arg_list($1, yylineno);
    }
    | argument_list ',' expr {
-      $$ = dm_link_arg_list($1, $3, yylineno);
+      $$ = dm_link_node_list($1, $3);
    }
 ;
 
@@ -239,7 +258,7 @@ selection_stmt
 elsif_list
    : elsif
    | elsif_list elsif {
-      $$ = dm_link_elsif_node($1, $2);
+      $$ = dm_link_node_list($1, $2);
    }
 ;
 
@@ -250,12 +269,20 @@ elsif
 ;
 
 iteration_stmt
-   : LOOP '(' logical_or_expr ')' stmt_list END
+   : LOOP '(' logical_or_expr ')' stmt_list END {
+      $$ = dm_create_iter_node($3, $5, yylineno);
+   }
 
 jump_stmt
-   : NEXT ';'
-   | BREAK ';'
-   | RETURN ';'
+   : NEXT ';' {
+      $$ = dm_create_node(nd_kNext, yylineno);
+   }
+   | BREAK ';' {
+      $$ = dm_create_node(nd_kBreak, yylineno);
+   }
+   | RETURN ';' {
+      $$ = dm_create_node(nd_kReturn, yylineno);
+   }
 ;
 
 %%
